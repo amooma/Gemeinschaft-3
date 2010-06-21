@@ -303,11 +303,14 @@ sed -i -r -e 's/^(RAMRUN=)no/\1yes/' /etc/default/rcS || true
 
 
 
+echo ""
+echo "***"
+echo "***  Installing Gemeinschaft Xen domU ..."
+echo "***"
 
+echo "(FIXME)"
 
-
-
-
+echo "DONE"
 
 
 
