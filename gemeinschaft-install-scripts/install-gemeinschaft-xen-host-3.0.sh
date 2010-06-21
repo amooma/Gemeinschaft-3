@@ -356,6 +356,7 @@ HEREDOC
 		let COUNTER=COUNTER-1
 	done
 	echo ""
+	( sleep 30 ; reboot ) &
 	( sleep 10 ; reboot ) &
 	( sleep 5 ; reboot ) &
 	reboot || true
