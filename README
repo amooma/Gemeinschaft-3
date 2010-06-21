@@ -1,0 +1,8 @@
+Einfach ./build.sh aufrufen und den Anweisungen folgen.
+
+Beispiel für Gemeinschaft 3 i386:
+
+./build.sh \
+  debian-testing-i386 \
+  http://www.amooma.de/gemeinschaft/installer/install-preseed-3.0.cfg
+
