@@ -1,11 +1,29 @@
 #!/bin/bash
 
+### BEGIN INIT INFO
+# Provides:          install-gemeinschaft-xen-host
+# Required-Start:    $network $syslog $named $local_fs $remote_fs $all
+# Required-Stop:     $network $syslog $named $local_fs $remote_fs
+# Should-Start:      rc.local xend xendomains
+# Should-Stop:       rc.local xend xendomains
+# X-Interactive:     true
+# Default-Start:     2
+# Default-Stop:      
+# Short-Description: Gemeinschaft Xen host installer
+# Description:       Gemeinschaft Xen host installer
+### END INIT INFO
+
+
 # (c) 2009-2010 AMOOMA GmbH - http://www.amooma.de
 # Alle Rechte vorbehalten. -- All rights reserved.
 
 # Dieses Skript wird als preseed/late_command von
 # preseed-3.0-xen-host.cfg aufgerufen.
 # Zweck: Installation des Xen-Host-Systems (dom0).
+
+if [ "-$1" != "-start" ]; then
+	exit 0
+fi
 
 
 err()
@@ -338,7 +356,9 @@ HEREDOC
 		let COUNTER=COUNTER-1
 	done
 	echo ""
-	reboot
+	( sleep 10 ; reboot ) &
+	( sleep 5 ; reboot ) &
+	reboot || true
 	exit 0
 	
 fi
