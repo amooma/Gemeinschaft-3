@@ -192,14 +192,14 @@ then
 	
 	# and add ls colors and some useful bash aliases:
 	cat <<\HEREDOC >> /root/.bashrc
-	
-	export LS_OPTIONS='--color=auto'
-	eval "`dircolors`"
-	alias ls='ls $LS_OPTIONS'
-	alias l='ls $LS_OPTIONS -lF'
-	alias ll='ls $LS_OPTIONS -lFA'
-	
-	HEREDOC
+
+export LS_OPTIONS='--color=auto'
+eval "`dircolors`"
+alias ls='ls $LS_OPTIONS'
+alias l='ls $LS_OPTIONS -lF'
+alias ll='ls $LS_OPTIONS -lFA'
+
+HEREDOC
 	#if [ "x${SHELL}" = "x/bin/bash" ]; then
 	#	source /root/.bashrc
 	#fi
