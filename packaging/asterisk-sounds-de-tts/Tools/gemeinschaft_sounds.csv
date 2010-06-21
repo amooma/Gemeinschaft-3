@@ -1,0 +1,99 @@
+--------------------------------------------------------------------
+            Voice Prompt file for TTS autogenerator
+                   gemeinschaft sounds
+
+ $Revision: 292 $
+
+ Copyright 2009, AMOOMA GmbH, Bachstr. 126, 56566 Neuwied, Germany,
+ http://www.amooma.de/
+ Stefan Wintermeyer <stefan.wintermeyer@amooma.de>
+ Philipp Kempgen <philipp.kempgen@amooma.de>
+ Peter Kozak <peter.kozak@amooma.de>
+ Soeren Sprenger <soeren.sprenger@amooma.de>
+--------------------------------------------------------------------
+
+
+"filename";"de";"en";"comment";"type"
+"aktiviert";"aktiviert";"activated";
+"alt";"alt";"old";
+"anklopfen";"anklopfen";"call waiting";
+"an";"an";"on";
+"auf-durchwahl";"auf Durchwahl";"to extension";
+"auf-wiedersehen";"auf wiedersehen";"Goodbye";
+"ausgeschaltet";"ausgeschaltet";"deactivated";
+"bei";"bei";"by";
+"besetzt";"besetzt";"busy";
+"bitte-druecken-sie-1-fuer-deutsch-2-fuer-englisch";"Bitte drücken Sie die 1 für Deutsch oder die 2 für Englisch.";"Plihs press oann for jarmen, or tuh for Inglisch";
+"bitte-geben-sie-ihre-durchwahl-nummer-ein";"Bitte geben Sie ihre Durchwahlnummer ein.";"Please enter your extension";
+"bitte-warten-sie-waehrend-ihr-telefon-neu-gestartet-wird";"Bitte warten Sie während ihr Telefon neu gestartet wird.";"Your phone will be restarted now. Please wait.";
+"bitte-warten-sie";"Bitte warten sie.";"Please wait.";
+"danach-die";"danach die";"followed by";
+"das-gateway-ist-nicht-erreichbar";"Das Gateway ist nicht erreichbar.";"The gateway is unreachable";
+"das";"das";"the";
+"deaktiviert";"deaktiviert";"deactivated";
+"der-teilnehmer-antwortet-nicht";"Der Teilnehmer antwortet nicht.";"The party you are trying to reach is not responding";
+"der-teilnehmer-kann-ihren-anruft-nicht-beantworten";"Der Teilnehmer kann ihren Anruf nicht beantworten.";"The party you are trying to reach is unable to answer your call.";
+"der-teilnehmer";"Der Teilnehmer";"The subscriber";
+"der-teilnehmer-wurde-per-sms-informiert";"Der Teilnehmer wird per SMS informiert.";"The party you are trying to reach will be notified by SMS";
+"der";"der";"the";
+"die-durchwahl";"Die Durchwahl";"The extension";
+"die";"die";"the";
+"druecken-sie-danach-die-raute-taste";"Drücken Sie danach die Rautetaste.";"Please press the pound key after that.";
+"druecken-sie-die-1-um-einen-automatischen-rueckruf-zu-programmieren";"Drücken Sie die 1 um einen automatischen Rückruf zu programmieren.";"Press 1 to set automatic call-back";
+"druecken-sie-die";"drücken Sie die";"Press";
+"druecken-sie";"drücken Sie";"press";
+"druecken";"drücken";"press";
+"eingeschaltet";"eingeschaltet";"activated";
+"eingestellt";"eingestellt";"adjusted";
+"eins";"eins";"one";
+"ein";"ein";"on";
+"erreichbar";"erreichbar";"available";
+"extern";"extern";"external";
+"falsche-rufnummer-diese";"Die Rufnummer dieses Teilnehmers hat sich geändert, bitte wählen Sie";"The number of the party you are trying to reach has changed, please call";
+"falsche-rufnummer-unsere";"Unsere Rufnummer hat sich geändert, bitte wählen Sie";"Our number has changed, please call";
+"falsches-passwort";"falsches Passwort";"wrong password";
+"fehler-beim-rufaufbau";"Fehler beim Rufaufbau.";"error on call initiation";
+"fuer-anrufe";"für Anrufe";"for calls";
+"fuer-einen-automatischen-rueckruf-druecken-sie-die";"Für einen automatischen Rückruf drücken Sie die";"For automatic call-back press";
+"ihr-telefon-wird-jetzt-neu-gestartet";"Ihr Telefon wird jetzt neu gestartet.";"Your phone will be restarted now.";
+"immer";"immer";"always";
+"intern";"intern";"internal";
+"ist-jetzt-wieder-erreichbar";"ist jetzt wieder erreichbar.";"is available now";
+"keine";"keine";"none";
+"kein";"kein";"none";
+"klingeldauer";"Klingeldauer";"ringing duration";
+"kosten";"Kosten";"billing";
+"login-fehlgeschlagen";"Anmeldung fehlgeschlagen.";"login failed";
+"nach";"nach";"after";
+"nein";"nein";"no";
+"neu";"neu";"new";
+"nicht-abheben";"nicht abheben";"do not answer";
+"nicht-eingeloggt";"nicht angemeldet";"not logged in";
+"nicht";"nicht";"no";
+"please-press-one-for-german-2-for-english";"Plihs press oann for jarmen, or tuh for Inglisch";"Bitte drücken Sie die 1 für Deutsch oder die 2 für Englisch.";
+"privatgespraech";"Privatgespräch";"Private call";
+"queue-all-busy";"Alle Mitarbeiter sind zur Zeit im Gespräch.";"All agents are currently busy";
+"raute-taste";"Rautetaste";"pound key";
+"raute";"Raute";"pound";
+"rueckruf-programmiert";"Rückruf programmiert.";"callback set";
+"rufumleitungsnummer";"Rufumleitungsnummer";"call forwarding number";
+"rufumleitung";"Rufumleitung";"call forwarding";
+"sie-haben-eine-rufumleitung-programmiert";"Sie haben eine Rufumleitung programmiert.";"call forwarding set";
+"sie-haben-ein-falsches-passwort-eingegeben";"Sie haben ein falsches Passwort eingegeben.";"You have entered a wrong password";
+"sie-haben-keine-amtsberechtigung";"Sie haben keine Amtsberechtigung.";"You have no permissions for direct outward dialing.";
+"sie-haben-keine-berechtigung-fuer-diese-zielrufnummer";"Sie haben keine Berechtigung für diese Zielrufnummer.";"You have no permissions to dial this number.";
+"sie-sind-abgemeldet";"Sie werden jetzt abgemeldet.";"You are logged off now";
+"sie-sind-jetzt-angemeldet";"Sie werden jetzt angemeldet.";"You are logged in now";
+"standard";"Standard";"standard";
+"stern-taste";"Sterntaste";"star";
+"stern";"Stern";"star";
+"stoeren";"Stören";"disturb";
+"tschuess";"Tschüss";"Goodbye";
+"um-eine-nachricht-zu-hinterlassen-druecken-sie-die";"Um eine Nachricht zu hinterlassen, drücken Sie die";"To leave a message please press";
+"um-einen-rueckrufwunsch-per-sms-zu-senden-druecken-sie-die-taste-1";"Um einen Rückrufwunsch per SMS zu senden, drücken sie die Taste 1";"To notify the party you are trying to reach about your call by SMS press 1";
+"variable";"variable";"variable";
+"vielen-dank";"Vielen Dank!";"Thank you!";
+"von";"von";"from";
+"wenn-sie-warten-werden-sie-automatisch-mit-der-telefonzentrale-verbunden";"Wenn Sie warten, werden Sie automatisch mit der Telefonzentrale verbunden.";"If you wait you will be connected to the switchboard";
+"willkommen";"Wilkommen";"Welcome";
+"replace-vm-options";"Durch Drücken der Stern-Taste kommen Sie zurück ins Hauptmenü";"press star key to return to the main menu.";

@@ -1,0 +1,14 @@
+Das Skript "create_asterisk_prompts_de.sh" ist eigentlich nur ein Wrapper für "gen_prompts.php" um es immer mit den richtigen Parametern aufzurufen.
+
+Verwendete Variablen:
+
+WORK_DIR  Arbeitsverzeichnis, z.B. "/tmp/" in dem gen_prompts.php liegt.
+DEST_DIR  Verzeichnis, in das die fertigen Voiceprompts ausgegeben werden, z.B. "/tmp/asterisk/";
+CSV_FILE= Kompletter Pfad zu der CSV Datei, z.B. "/tmp/asterisk_core_sounds.csv";
+
+Der Befehl "cd /usr/local/svox/delivery/notermout" im Skript wechselt einfach in das Verzeichnis, von dem aus der Sprachgenerator aufgerufen werden muss, wenn dieser das benötigt.
+
+Danach wird einfach das PHP-Skript aufgerufen, welches nun alles erledigt.
+
+nice -19 $WORK_DIR/gen_prompts.php -w"$DEST_DIR"  -f"$CSV_FILE" -g"./svox {INFILE} {OUTFILE}"  -l"de"
+

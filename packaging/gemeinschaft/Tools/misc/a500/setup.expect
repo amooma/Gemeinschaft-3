@@ -1,0 +1,73 @@
+#!/usr/bin/expect -f
+
+# (c) 2009 AMOOMA GmbH - http://www.amooma.de
+# Alle Rechte vorbehalten. -- All rights reserved.
+# $Revision: 287 $
+
+
+set PointToPoint [lindex $argv 0]
+
+spawn /usr/sbin/wancfg_smg
+
+set i 0
+set group 1
+while {$i < $argc} {
+expect "Would you like to configure AFT-A500"
+send "1\n"
+
+expect "Would you like to enable hardware DTMF detection?"
+send "1\n"
+
+expect "Would you like to enable hardware fax detection?"
+send "2\n"
+
+set ptp [lindex $argv $i]
+incr ptp
+expect "Select connection type for port "
+send $ptp
+send "\n"
+
+expect "Input the group for this port"
+send $group
+send "\n"
+
+expect "Select dialplan context for group:"
+send "2\n"
+
+expect "Input the context for this port:"
+send "from-gateways\n"
+
+expect "Configuring span"
+send "1\n"
+
+  incr i
+  incr group
+}
+
+expect "Press any key to continue:"
+send "\n"
+
+expect "Would you like to configure A500 BRI card as timing source for Zaptel?"
+send "1\n"
+
+expect "Press any key to continue:"
+send "1\n"
+
+expect "Configuration Complete! Please select following:"
+send "1\n"
+
+expect "Zaptel and Wanpipe configuration complete: choose action"
+send "1\n"
+
+expect "Would you like wanrouter to start on system boot?"
+send "1\n"
+
+expect "Would you like smg_ctrl to start/stop on wanrouter start\nor would you like to run smg_ctrl in safe start?"
+send "1\n"
+	
+expect "Would you like smg_ctrl to start on system boot?"
+send "2\n"
+
+expect "Sangoma cards configuration complete, exiting..."
+puts "Sangoma Card Installed!"
+
