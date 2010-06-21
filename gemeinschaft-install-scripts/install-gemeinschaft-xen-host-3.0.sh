@@ -75,7 +75,7 @@ COUNTER=0
 while [  $COUNTER -lt 10 ]; do
     echo -n "."
     sleep 1
-    let COUNTER=COUNTER+1 
+    let COUNTER=COUNTER+1
 done
 echo ""
 
@@ -86,6 +86,73 @@ echo "***"
 echo "***  Updating package lists ..."
 echo "***"
 aptitude update
+
+
+
+
+if ! uname -r | grep xen
+then
+	# Xen kernel not running.
+	# Install Xen.
+	
+	echo ""
+	echo "***"
+	echo "***  Installing Xen ..."
+	echo "***"
+	
+	LINUX_IMAGE_ARCH=`uname -r | awk 'BEGIN { FS = "-" } ; { print $NF }'`
+	# e.g. "686" or "amd64"
+	echo "    LINUX_IMAGE_ARCH = $LINUX_IMAGE_ARCH"
+	
+	DPKG_ARCH=`dpkg --print-architecture`
+	# e.g. "i386" or "x86_64"
+	echo "           DPKG_ARCH = $DPKG_ARCH"
+	
+	if ! aptitude show linux-image-xen-${LINUX_IMAGE_ARCH} 1>>/dev/null
+	then
+		echo ""
+		echo "********************************************************************"
+		echo "Sorry. Package \"linux-image-xen-${LINUX_IMAGE_ARCH}\" not available."
+		echo "Your architecture \"${LINUX_IMAGE_ARCH}\" (`uname -m`) is not supported."
+		echo "********************************************************************"
+		exit 1
+	fi
+	
+	${APTITUDE_INSTALL} \
+	  linux-image-xen-${LINUX_IMAGE_ARCH} \
+	  xen-hypervisor-${DPKG_ARCH} \
+	  xen-utils
+	
+	# We have to reboot.
+	echo "***"
+	echo "***  Rebooting into Xen dom0 ..."
+	echo "***"
+	COUNTER=5
+	while [  $COUNTER -gt 0 ]; do
+		echo -n " ${COUNTER} "
+		sleep 1
+		let COUNTER=COUNTER-1
+	done
+	echo ""
+	reboot
+	exit 0
+	
+fi
+
+
+# Xen kernel running.
+
+
+
+#NON_XEN_KERNELS=`find /boot/ -mindepth 1 -maxdepth 1 -name 'initrd.img-*' -printf '%f\n' | grep -v virt | cut -d - -f 2-`
+#if [ ! -z "$NON_XEN_KERNELS" ]; then
+#	echo "Removing non-Xen kernels ..."
+#	for k in $NON_XEN_KERNELS
+#	do
+#		echo "Removing kernel linux-image-$k ..."
+#		aptitude -y remove linux-image-$k
+#	done
+#fi
 
 
 # install and configure local nameserver
