@@ -173,9 +173,6 @@ then
 	echo "Checking Internet access ..."
 	while ! ( wget -O - -T 30 --spider http://www.amooma.de/ >>/dev/null ); do sleep 5; done
 	
-	MY_MAC_ADDR=`LANG=C ifconfig | grep -oE '[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}' | head -n 1`
-	wget -O - -T 30 --spider http://www.amooma.de/gemeinschaft/installer/checkin?mac=$MY_MAC_ADDR >>/dev/null 2>>/dev/null || true
-	
 	
 	# install basic stuff
 	#
@@ -191,6 +188,10 @@ then
 		console-data console-tools \
 		vim less
 	#aptitude clean
+	
+	
+	MY_MAC_ADDR=`LANG=C ifconfig | grep -oE '[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}' | head -n 1`
+	wget -O - -T 30 --spider http://www.amooma.de/gemeinschaft/installer/checkin?mac=$MY_MAC_ADDR >>/dev/null 2>>/dev/null || true
 	
 	
 	# now that we have vim, enable syntax highlighting by default:
@@ -251,7 +252,7 @@ HEREDOC
 		
 		dialog --infobox "Lizenz-Schlüssel wird überprüft ..." 6 60
 		sleep 1
-		check_result=`wget -q -O - -T 40 "http://www.kempgen.net/tmp/gemeinschaft-amooma/xen/license-check?key=${LICENSE_KEY}"`
+		check_result=`wget -q -O - -T 40 "http://www.kempgen.net/tmp/gemeinschaft-amooma/xen/license-check?key=${LICENSE_KEY}&mac=${MY_MAC_ADDR}"`
 		if ! echo $check_result | grep -i CHECK 1>>/dev/null 2>>/dev/null
 		then
 			sleep 1
