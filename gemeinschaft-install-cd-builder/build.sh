@@ -37,6 +37,7 @@ usage()
 	USAGE="${USAGE}    http://www.amooma.de/gemeinschaft/installer/install-preseed-2.3.cfg\n"
 	USAGE="${USAGE}    http://www.amooma.de/gemeinschaft/installer/install-preseed-2.3-eco.cfg\n"
 	USAGE="${USAGE}    http://www.amooma.de/gemeinschaft/installer/install-preseed-2.3-business.cfg\n"
+	USAGE="${USAGE}    http://www.amooma.de/gemeinschaft/installer/preseed-3.0-xen-host.cfg  <-\n"
 	
 	echo -e "$USAGE" >&2
 	exit 1
