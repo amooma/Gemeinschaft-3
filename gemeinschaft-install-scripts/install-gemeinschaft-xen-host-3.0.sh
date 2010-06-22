@@ -149,6 +149,7 @@ then
 	for server in \
 	  "www.amooma.de" \
 	  "www.amooma.com" \
+	  "www.gemeinschaft.de" \
 	  "downloads.digium.com" \
 	  "downloads.asterisk.org" \
 	  "downloads.sourceforge.net" \
