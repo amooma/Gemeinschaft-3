@@ -93,7 +93,7 @@ COUNTER=0
 while [  $COUNTER -lt 10 ]; do
     echo -n "."
     sleep 1
-    let COUNTER=COUNTER+1
+    COUNTER=$(( $COUNTER+1 ))
 done
 echo ""
 
@@ -355,7 +355,7 @@ HEREDOC
 	while [  $COUNTER -gt 0 ]; do
 		echo -n " ${COUNTER} "
 		sleep 1
-		let COUNTER=COUNTER-1
+		COUNTER=$(( $COUNTER-1 ))
 	done
 	echo ""
 	( sleep 30 ; reboot ) &
