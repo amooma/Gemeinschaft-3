@@ -442,7 +442,8 @@ echo "***"
 #cd /var/lib/asterisk/moh/
 cd /usr/share/asterisk/moh/
 for fmt in alaw; do
-	F=asterisk-moh-freeplay-${fmt}
+	#F=asterisk-moh-freeplay-${fmt}
+	F=asterisk-moh-opsound-${fmt}
 	wget http://downloads.asterisk.org/pub/telephony/sounds/${F}.tar.gz
 	tar -xzf ${F}.tar.gz
 	rm ${F}.tar.gz
