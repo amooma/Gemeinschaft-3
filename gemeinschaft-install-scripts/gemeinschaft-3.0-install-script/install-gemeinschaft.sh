@@ -2,7 +2,6 @@
 
 # (c) 2009-2010 AMOOMA GmbH - http://www.amooma.de
 # Alle Rechte vorbehalten. -- All rights reserved.
-# $Revision: 365 $
 
 
 #GEMEINSCHAFT_VERS="2.4.0"
@@ -25,39 +24,69 @@ ASTERISK_SOUNDS_DE_ALAW_TGZ_URL_DIR="http://www.amooma.de/asterisk/sprachbaustei
 # URL: ${ASTERISK_SOUNDS_DE_ALAW_TGZ_URL_DIR}/asterisk-core-sounds-de-alaw.tar.gz
 
 
+# language
+L2=`echo $LANG | head -c 2 | tr 'A-Z' 'a-z'`
+if [ -z $L2 ]; then L2='xx'; fi
+
+
 err()
 {
+	ERRMSG="$*"
 	echo '' >&2
-	echo -n '***** Error!' >&2
-	[ ! -z "$ERRMSG" ] && echo -n " $ERRMSG" >&2
-	echo -e "\n" >&2
+	echo '*****************************************************************' >&2
+	echo '' >&2
+	if [ "$L2" == "de" ]; then
+		echo '  FEHLER!' >&2
+	else
+		echo '  ERROR!' >&2
+	fi
+	if [ ! -z "$ERRMSG" ]; then echo -e "$ERRMSG" >&2 ; fi
+	echo '' >&2
+	echo '*****************************************************************' >&2
+	echo '' >&2
 	exit 1
 }
 
-trap "(echo ''; echo '***** Aborted!') >&2; exit 130" SIGINT SIGTERM SIGQUIT SIGHUP
+trap "(echo ''; echo '***** ABORTED!') >&2; exit 130" INT TERM QUIT HUP
 trap "err; exit 1" ERR
 
-# do nothing if Gemeinschaft has already been installed
-#
-if [ -e /opt/gemeinschaft ]; then
-	echo "Gemeinschaft has already been installed." >&2
-	exit 0
-fi
 
 # check system
 #
 if [ ! -e /etc/debian_version ]; then
-	ERRMSG="This script works on Debian only."
-	err
+	if [ "$L2" == "de" ]; then
+		err "Ihr System ist kein Debian."
+	else
+		err "Your system is not Debian."
+	fi
 fi
 if [ "`id -un`" != "root" ]; then
-	ERRMSG="This script must be run as root."
-	err
+	if [ "$L2" == "de" ]; then
+		err "Dieses Skript muss als Benutzer \"root\" ausgeführt werden."
+	else
+		err "This script must be run as user \"root\"."
+	fi
 fi
+
+if ( ! cat /etc/debian_version | head -n 1 | grep '^6.'      1>>/dev/null ) \
+&& ( ! cat /etc/debian_version | head -n 1 | grep 'squeeze'  1>>/dev/null )
+then
+	if [ "$L2" == "de" ]; then
+		err "  Ihr Debian ist nicht Version 6 (\"Squeeze\").\n" \
+			"  Bitte laden Sie einen Debian-Installer herunter:\n" \
+			"  http://cdimage.debian.org/cdimage/daily-builds/squeeze_d-i/current/"
+	else
+		err "  Your Debian is not version 6 (\"Squeeze\").\n" \
+			"  Please download a Debian installer from\n" \
+			"  http://cdimage.debian.org/cdimage/daily-builds/squeeze_d-i/current/"
+	fi
+fi
+
 
 # set PATH
 #
 export PATH="/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:${PATH}"
+
 
 # list of SourceForge mirrors:
 #SOURCEFORGE_MIRRORS=""
@@ -78,11 +107,11 @@ export PATH="/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:${PATH
 #SOURCEFORGE_MIRRORS="${SOURCEFORGE_MIRRORS} http://jaist.dl.sourceforge.net/sourceforge"        # jp
 #SOURCEFORGE_MIRRORS="${SOURCEFORGE_MIRRORS} http://nchc.dl.sourceforge.net/sourceforge"         # tw
 
+
 # setup basic stuff
 #
 clear
 echo ""
-echo "*** Status: A minimal Debian system has been installed."
 echo "***         Now we start to install and setup stuff we need for"
 echo "***         Gemeinschaft. Better get yourself a cup of coffee."
 cat <<\HEREDOC
@@ -97,7 +126,8 @@ cat <<\HEREDOC
               `""""""""""""`
 
 HEREDOC
-sleep 1
+#sleep 1
+
 #echo "***"
 #echo "***  Setting up basic stuff ..."
 #echo "***"
@@ -110,15 +140,17 @@ APTITUDE_INSTALL="${APTITUDE_INSTALL} --allow-new-upgrades --allow-new-installs"
 APTITUDE_INSTALL="${APTITUDE_INSTALL} install"
 #echo "APTITUDE_INSTALL = ${APTITUDE_INSTALL}"
 
+
 # very cheap hack to wait for the DHCP-client
 #
 COUNTER=0
 while [  $COUNTER -lt 10 ]; do
     echo -n "."
-    sleep 1
+    #sleep 1
     let COUNTER=COUNTER+1 
 done
 echo ""
+
 
 # update package lists
 #
@@ -128,41 +160,57 @@ echo "***  Updating package lists ..."
 echo "***"
 aptitude update
 
+
 # install and configure local nameserver
 #
 echo ""
 echo "***"
 echo "***  Installing local caching nameserver ..."
 echo "***"
-${APTITUDE_INSTALL} bind9 dnsutils
+if ( ! which named 1>>/dev/null 2>>/dev/null ); then
+	echo "***  Installing bind9 ..."
+	${APTITUDE_INSTALL} bind9
+fi
+if [ ! -e /etc/init.d/bind9 ]; then
+	echo "***  Installing bind9 ..."
+	${APTITUDE_INSTALL} bind9
+fi
+
+${APTITUDE_INSTALL} dnsutils
 # install dnsutils so we can use dig later
 #aptitude clean
-[ -e /etc/resolv.conf ]
-if [[ `grep -Ee "^nameserver[ \t]+" /etc/resolv.conf | head -n 1 | grep -Ee "127\.0\.0\.1"` ]]; then
-	echo "nameserver 127.0.0.1 already configured."
-else
-	[ -e /tmp/resolv.conf ] && rm -f /tmp/resolv.conf || true
-	echo "nameserver 127.0.0.1" > /tmp/resolv.conf
-	cat /etc/resolv.conf >> /tmp/resolv.conf
-	mv -fT /tmp/resolv.conf /etc/resolv.conf
+
+if [ -e /etc/resolv.conf ]; then
+	if [[ `grep -Ee "^nameserver[ \t]+" /etc/resolv.conf | head -n 1 | grep -Ee "127\.0\.0\.1"` ]]; then
+		echo "nameserver 127.0.0.1 already configured."
+	else
+		[ -e /tmp/resolv.conf ] && rm -f /tmp/resolv.conf || true
+		echo "nameserver 127.0.0.1" > /tmp/resolv.conf
+		cat /etc/resolv.conf >> /tmp/resolv.conf
+		mv -fT /tmp/resolv.conf /etc/resolv.conf
+	fi
+	if [ -e /etc/bind/named.conf.local ]; then
+		if [ -e /etc/bind/zones.rfc1918 ]; then
+			if [[ `grep "^include" /etc/bind/named.conf.local | grep "zones\.rfc1918"` ]]; then
+				echo "/etc/bind/named.conf.local already includes /etc/bind/zones.rfc1918"
+			else
+				echo 'include "/etc/bind/zones.rfc1918";' >> /etc/bind/named.conf.local
+			fi
+			if [[ `grep "OPTIONS" /etc/default/bind9 | grep -e "-4"` ]]; then
+				echo "/etc/default/bind9 already has -4 option for named."
+			else
+				sed -i 's/OPTIONS.*/OPTIONS="-4 -u bind"/' /etc/default/bind9
+			fi
+		fi
+	fi
+	/etc/init.d/bind9 restart || true
 fi
-[ -e /etc/bind/named.conf.local ]
-[ -e /etc/bind/zones.rfc1918 ]
-if [[ `grep "^include" /etc/bind/named.conf.local | grep "zones\.rfc1918"` ]]; then
-	echo "/etc/bind/named.conf.local already includes /etc/bind/zones.rfc1918"
-else
-	echo 'include "/etc/bind/zones.rfc1918";' >> /etc/bind/named.conf.local
-fi
-if [[ `grep "OPTIONS" /etc/default/bind9 | grep -e "-4"` ]]; then
-	echo "/etc/default/bind9 already has -4 option for named."
-else
-	sed -i 's/OPTIONS.*/OPTIONS="-4 -u bind"/' /etc/default/bind9
-fi
-/etc/init.d/bind9 restart
+
 # try to fill the DNS cache to speed up things later:
 for server in \
   "www.amooma.de" \
   "www.amooma.com" \
+  "www.gemeinschaft.de" \
   "downloads.digium.com" \
   "downloads.asterisk.org" \
   "downloads.sourceforge.net" \
@@ -181,12 +229,14 @@ for server in \
 done
 sleep 1
 
+
 # wait for internet access
 #
 echo "Checking Internet access ..."
 while ! ( wget -O - -T 30 http://www.amooma.de/ >>/dev/null ); do sleep 5; done
 MY_MAC_ADDR=`LANG=C ifconfig | grep -oE '[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}' | head -n 1`
 wget -O - -T 30 --spider http://www.amooma.de/gemeinschaft/installer/checkin?mac=$MY_MAC_ADDR >>/dev/null 2>>/dev/null || true
+
 
 # install basic stuff
 #
@@ -204,12 +254,12 @@ ${APTITUDE_INSTALL} \
 #aptitude clean
 
 # now that we have vim, enable syntax highlighting by default:
-if [ `which vim` ]; then
+if ( which vim 1>>/dev/null 2>>/dev/null ); then
 	sed -i -r -e 's/^"(syntax) on/\1 on/' /etc/vim/vimrc || true
 fi
 
 # set EDITOR to "vim"
-if [ `which vim` ]; then
+if ( which vim 1>>/dev/null 2>>/dev/null ); then
 	echo "" >> /root/.bashrc || true
 	echo "export EDITOR=\"vim\"" >> /root/.bashrc || true
 	echo "" >> /root/.bashrc || true
@@ -236,6 +286,7 @@ WGET="wget"
 WGET_ARGS="-c -T 60 --no-check-certificate"
 DOWNLOAD="${WGET} ${WGET_ARGS}"
 
+
 # set up lang enviroment
 #
 echo ""
@@ -243,11 +294,15 @@ echo "***"
 echo "***  Setting up language environment ..."
 echo "***"
 ${APTITUDE_INSTALL} locales
-[ -e /etc/locale.gen ]
-grep -e "^de_DE\.UTF-8 UTF-8" /etc/locale.gen || echo "de_DE.UTF-8 UTF-8" >> /etc/locale.gen
-grep -e "^en_US\.UTF-8 UTF-8" /etc/locale.gen || echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-type locale-gen 1>>/dev/null 2>>/dev/null
-locale-gen 
+if [ -e /etc/locale.gen ]; then
+	grep -e "^de_DE\.UTF-8 UTF-8" /etc/locale.gen || echo "de_DE.UTF-8 UTF-8" >> /etc/locale.gen
+	grep -e "^en_US\.UTF-8 UTF-8" /etc/locale.gen || echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+fi
+if ( type locale-gen 2>>/dev/null ); then
+	locale-gen
+else
+	echo "WARNING: locale-gen not found!" >&2
+fi
 
 
 # install ntp
@@ -256,12 +311,18 @@ echo ""
 echo "***"
 echo "***  Installing NTP ..."
 echo "***"
-${APTITUDE_INSTALL} ntp ntpdate
+if ( ! which ntpd 1>>/dev/null 2>>/dev/null ); then
+	${APTITUDE_INSTALL} ntp
+fi
+if ( ! which ntpdate 1>>/dev/null 2>>/dev/null ); then
+	${APTITUDE_INSTALL} ntpdate
+fi
 /etc/init.d/ntp stop 2>>/dev/null || true
 ntpdate 0.debian.pool.ntp.org || true
 ntpdate 1.debian.pool.ntp.org || true
-/etc/init.d/ntp start
+/etc/init.d/ntp start || true
 sleep 3
+
 
 # make /var/run/ available as a ram file system (tmpfs).
 #
@@ -293,7 +354,7 @@ if [ ! -e /lib/modules/`uname -r`/dahdi/dahdi.ko ]; then
 fi
 
 # generate /etc/dahdi/system.conf:
-dahdi_genconf
+dahdi_genconf || true
 
 
 # install libpri, asterisk, asterisk-chan-capi
@@ -310,6 +371,7 @@ ${APTITUDE_INSTALL} libpri1.4 asterisk \
 # environment.
 aptitude clean
 
+
 # create directory for call-files
 #
 mkdir -p /var/spool/asterisk/outgoing
@@ -324,16 +386,18 @@ chmod 0440 /etc/sudoers.d/gemeinschaft-asterisk
 
 # install lame
 #
-echo ""
-echo "***"
-echo "***  Installing Lame ..."
-echo "***"
-echo 'deb http://www.debian-multimedia.org squeeze main non-free' \
-	> /etc/apt/sources.list.d/debian-multimedia.list
-aptitude update --allow-untrusted
-${APTITUDE_INSTALL} --allow-untrusted debian-multimedia-keyring
-#${APTITUDE_INSTALL} lame
-${APTITUDE_INSTALL} --allow-untrusted lame
+if ( ! which lame 1>>/dev/null 2>>/dev/null ); then
+	echo ""
+	echo "***"
+	echo "***  Installing Lame ..."
+	echo "***"
+	echo 'deb http://www.debian-multimedia.org squeeze main non-free' \
+		> /etc/apt/sources.list.d/debian-multimedia.list
+	aptitude update --allow-untrusted || true
+	${APTITUDE_INSTALL} --allow-untrusted debian-multimedia-keyring || true
+	#${APTITUDE_INSTALL} lame || true
+	${APTITUDE_INSTALL} --allow-untrusted lame || true
+fi
 
 
 # install misc packages
@@ -366,6 +430,7 @@ cd /usr/share/asterisk/sounds/
 ${DOWNLOAD} "${ASTERISK_SOUNDS_DE_ALAW_TGZ_URL_DIR}/asterisk-core-sounds-de-alaw.tar.gz"
 tar -xzf asterisk-core-sounds-de-alaw.tar.gz
 rm -f asterisk-core-sounds-de-alaw.tar.gz
+
 
 # install music on hold (MOH) for Asterisk
 #
@@ -472,6 +537,7 @@ sed -i -e 's/DEFINER *= *[^ ]*/DEFINER=CURRENT_USER()/g' asterisk.sql
 mysql --batch --user=gemeinschaft --password="${GEMEINSCHAFT_DB_PASS}" < asterisk.sql
 cd
 
+
 # Apache configuration
 #
 echo ""
@@ -497,6 +563,7 @@ a2enmod mime
 a2enmod php5
 a2enmod headers || true
 
+
 # PHP-APC
 #
 echo ""
@@ -513,6 +580,7 @@ invoke-rc.d apache2 restart
 #
 echo "www-data  ALL=(ALL)  NOPASSWD: ALL" > /etc/sudoers.d/gemeinschaft-apache
 chmod 0440 /etc/sudoers.d/gemeinschaft-apache
+
 
 # configure Asterisk
 #
@@ -532,8 +600,10 @@ sed -i -r -e 's#^(astdatadir\s*).*#\1=> /usr/share/asterisk#' /etc/asterisk/aste
 # (the default on Debian):
 sed -i -r -e 's#^(astrundir\s*).*#\1=> /var/run/asterisk#' /etc/asterisk/asterisk.conf || true
 
+
 # change owner of /opt/gemeinschaft/etc/asterisk/* to asterisk
 chown -h -R asterisk:asterisk /opt/gemeinschaft/etc/asterisk
+
 
 # configure Gemeinschaft
 #
@@ -610,6 +680,7 @@ mysql --batch --user=gemeinschaft --password="${GEMEINSCHAFT_DB_PASS}" -e "USE \
 
 # moved gemeinschaft-siemens installing here cause gemeinschaft have to be configured before generating the SSL cert
 
+
 # install gemeinschaft-siemens addon
 #
 echo "Downloading Siemens addon for Gemeinschaft (Openstage provisoning) ..."
@@ -622,6 +693,7 @@ ln -snf gemeinschaft-siemens-source-${GEMEINSCHAFT_SIEMENS_VERS} gemeinschaft-si
 cd /opt/
 ln -snf /opt/gemeinschaft-siemens-source/opt/gemeinschaft-siemens gemeinschaft-siemens
 cd
+
 
 # configure gemeinschaft-siemens
 #
@@ -641,15 +713,18 @@ ln -snf /opt/gemeinschaft-siemens-source/doc/httpd-vhost.conf.example gemeinscha
 a2ensite gemeinschaft-siemens
 cd
 
+
 # documentation
 #
 cd /usr/share/doc
 ln -snf /opt/gemeinschaft-source/usr/share/doc/gemeinschaft
 
+
 # log dir
 #
 mkdir -p /var/log/gemeinschaft
 chmod a+rwx /var/log/gemeinschaft
+
 
 # logrotate rules
 #
@@ -657,11 +732,13 @@ cd /etc/logrotate.d/
 ln -snf /opt/gemeinschaft-source/etc/logrotate.d/asterisk
 ln -snf /opt/gemeinschaft-source/etc/logrotate.d/gemeinschaft
 
+
 # web dir
 #
 cd /var/www/
 ln -snf /opt/gemeinschaft-source/var/www/gemeinschaft
 ln -snf /opt/gemeinschaft-source/var/www/.htaccess
+
 
 # misc
 #
@@ -677,6 +754,7 @@ if [ -e /opt/gemeinschaft-source/etc/init.d/gs-sip-ua-config-responder ]; then
 	update-rc.d gs-sip-ua-config-responder defaults 92 8
 	invoke-rc.d gs-sip-ua-config-responder start
 fi
+
 
 # cron jobs
 #
@@ -695,6 +773,7 @@ echo "***"
 aptitude -y markauto linux-headers-`uname -r` linux-kernel-headers
 aptitude clean
 
+
 # add /opt/gemeinschaft/scripts to PATH
 #
 echo "" >> /root/.bashrc || true
@@ -703,6 +782,7 @@ echo "" >> /root/.bashrc || true
 #if [ "x${SHELL}" = "x/bin/bash" ]; then
 #	source /root/.bashrc
 #fi
+
 
 # motd
 #
@@ -719,9 +799,11 @@ echo "***" >> /etc/motd.static
 [ -e /etc/motd ] && rm -rf /etc/motd || true
 ln -s /etc/motd.static /etc/motd
 
+
 # fax installation starts here
 #
 HF_CONF_SRC="/usr/share/doc/gemeinschaft/misc/fax-integration"
+
 
 echo ""
 echo "***"
@@ -751,6 +833,7 @@ echo "mo01:23:respawn:/usr/sbin/faxgetty ttyIAX1" >> /etc/inittab
 
 # make init reload /etc/inittab
 /sbin/init q
+
 
 echo ""
 echo "***"
@@ -794,6 +877,7 @@ cp "${HF_CONF_SRC}/FaxDispatch" /var/spool/hylafax/etc/
 # make hylafax run on boot
 #
 sed -i -r -e 's/^ *# *(RUN_HYLAFAX)=.*/\1=1/g' /etc/default/hylafax
+
 
 # delete example users, queues etc.
 #
@@ -846,6 +930,7 @@ USER_PIN=`printf "%04d\n" "$PIN"`
 	--email="" \
 	--host=1 || true
 
+
 # add admin to GUI_SUDO_ADMINS:
 #sed -i "s/\(^[\s#\/]*\$GUI_SUDO_ADMINS\s*=\s*\)\([\"']\)[^\"']*[\"']\s*;/\1'${ADMIN_NAME}';/g" /etc/gemeinschaft/gemeinschaft.php
 # add "admin" account in group system:
@@ -873,15 +958,19 @@ invoke-rc.d asterisk start || true
 
 dmesg | grep -i dahdi || true
 
+
 # updating authentication file
 #
 /opt/gemeinschaft/sbin/gs-hylafax-auth-update || true
+
 
 # check out
 #
 wget -O - -T 30 --spider "http://www.amooma.de/gemeinschaft/installer/checkout?mac=$MY_MAC_ADDR" >>/dev/null 2>>/dev/null || true
 
+
 logger "Gemeinschaft ${GEMEINSCHAFT_VERS} has just been installed."
+
 
 # warning
 #
@@ -893,6 +982,7 @@ echo "Never ever run this system outside of a safe intranet "
 echo "environment without doing some serious security auditing!"
 echo "See /etc/gemeinschaft/gemeinschaft.php"
 echo ""
+
 
 # let's do some ASCII art
 #
@@ -919,9 +1009,12 @@ echo "***     http://www.amooma.de/gemeinschaft/"
 echo "**************************************************************************"
 )
 
+
 # make bash re-read .bashrc:
 #
 if [ "x${SHELL}" = "x/bin/bash" ]; then
 	exec ${SHELL}
 fi
 exit 0
+
+
