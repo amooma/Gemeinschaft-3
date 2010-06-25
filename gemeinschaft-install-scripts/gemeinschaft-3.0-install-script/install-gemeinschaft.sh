@@ -146,7 +146,7 @@ APTITUDE_INSTALL="${APTITUDE_INSTALL} install"
 COUNTER=0
 while [  $COUNTER -lt 10 ]; do
     echo -n "."
-    #sleep 1
+    sleep 1
     let COUNTER=COUNTER+1 
 done
 echo ""
