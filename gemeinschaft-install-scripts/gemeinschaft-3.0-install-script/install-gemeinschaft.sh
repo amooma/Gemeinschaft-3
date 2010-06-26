@@ -938,6 +938,16 @@ USER_PIN=`printf "%04d\n" "$PIN"`
 /opt/gemeinschaft/scripts/gs-group-member-add --group admins --member $ADMIN_NAME
 
 
+# get SIP passwords:
+
+ADMIN_SIPPW=$( mysql --user=gemeinschaft --password=${GEMEINSCHAFT_DB_PASS} -h localhost -D asterisk -A -B --raw -N -s -s -s -e "SELECT \`secret\` FROM \`ast_sipfriends\` WHERE \`name\`='$ADMIN_EXTEN'" | awk  '{print $1}' );
+if [ -z $ADMIN_SIPPW ]; then ADMIN_SIPPW='x'; fi
+
+USER_SIPPW=$( mysql --user=gemeinschaft --password=${GEMEINSCHAFT_DB_PASS} -h localhost -D asterisk -A -B --raw -N -s -s -s -e "SELECT \`secret\` FROM \`ast_sipfriends\` WHERE \`name\`='$USER_EXTEN'" | awk  '{print $1}' );
+if [ -z $ADMIN_SIPPW ]; then USER_SIPPW='x'; fi
+
+
+
 echo ""
 echo "***"
 echo "***  Restarting services ..."
