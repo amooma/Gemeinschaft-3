@@ -55,16 +55,16 @@ trap "err; exit 1" ERR
 #
 if [ ! -e /etc/debian_version ]; then
 	if [ "$L2" == "de" ]; then
-		err "Ihr System ist kein Debian."
+		err "  Ihr System ist kein Debian."
 	else
-		err "Your system is not Debian."
+		err "  Your system is not Debian."
 	fi
 fi
 if [ "`id -un`" != "root" ]; then
 	if [ "$L2" == "de" ]; then
-		err "Dieses Skript muss als Benutzer \"root\" ausgeführt werden."
+		err "  Dieses Skript muss als Benutzer \"root\" ausgeführt werden."
 	else
-		err "This script must be run as user \"root\"."
+		err "  This script must be run as user \"root\"."
 	fi
 fi
 
@@ -86,6 +86,21 @@ fi
 # set PATH
 #
 export PATH="/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:${PATH}"
+
+
+
+if ( which asterisk 1>>/dev/null 2>>/dev/null ); then
+	if ( aptitude search asterisk | grep '^i' | grep -Ee '\sasterisk\s' 1>>/dev/null 2>>/dev/null ); then
+		if [ "$L2" == "de" ]; then
+		err "  Auf diesem System ist bereits eine andere, möglicherweise\n" \
+			"  nicht kompatible Version von Asterisk installiert."
+	else
+		err "  This system already has a version of Astersik which might\n" \
+			"  not be compatible."
+	fi
+	fi
+fi
+
 
 
 # list of SourceForge mirrors:
@@ -462,14 +477,12 @@ ${DOWNLOAD} "${GEMEINSCHAFT_TGZ_URL_DIR}/gemeinschaft-${GEMEINSCHAFT_VERS}.tgz"
 
 NUM_DIRS_IN_TARBALL=`tar --list -f gemeinschaft-${GEMEINSCHAFT_VERS}.tgz | cut -d '/' -f 1 | uniq | wc -l`
 if [ "x${NUM_DIRS_IN_TARBALL}" != "x1" ]; then
-	ERRMSG="Gemeinschaft tarball contains more than one directory!"
-	err
+	err "  Gemeinschaft tarball contains more than one directory!"
 fi
 echo "Gemeinschaft tarball contains exactly one top-level entry. Good."
 TARBALL_TOP_LEVEL_DIR=`tar --list -f gemeinschaft-${GEMEINSCHAFT_VERS}.tgz | head -n 1 | cut -d '/' -f 1`
 if [ "${TARBALL_TOP_LEVEL_DIR}x" != "gemeinschaft-${GEMEINSCHAFT_VERS}x" ]; then
-	ERRMSG="Top-level directory in Gemeinschaft tarball has to be \"gemeinschaft-${GEMEINSCHAFT_VERS}\" but is \"${TARBALL_TOP_LEVEL_DIR}\"!"
-	err
+	err "  Top-level directory in Gemeinschaft tarball has to be \"gemeinschaft-${GEMEINSCHAFT_VERS}\" but is \"${TARBALL_TOP_LEVEL_DIR}\"!"
 fi
 echo "Gemeinschaft tarball contains ${TARBALL_TOP_LEVEL_DIR}. Good."
 tar -xvzf gemeinschaft-${GEMEINSCHAFT_VERS}.tgz
