@@ -90,7 +90,7 @@ export PATH="/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:${PATH
 
 
 if ( which asterisk 1>>/dev/null 2>>/dev/null ); then
-	if ( aptitude search asterisk | grep '^i' | grep -Ee '\sasterisk\s' 1>>/dev/null 2>>/dev/null ); then
+	if ( ! aptitude search asterisk | grep '^i' | grep -Ee '\sasterisk\s' 1>>/dev/null 2>>/dev/null ); then
 		if [ "$L2" == "de" ]; then
 		err "  Auf diesem System ist bereits eine andere, möglicherweise\n" \
 			"  nicht kompatible Version von Asterisk installiert."
