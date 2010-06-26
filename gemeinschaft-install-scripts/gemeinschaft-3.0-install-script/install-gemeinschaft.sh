@@ -927,7 +927,9 @@ echo "***  Installing HylaFax ..."
 echo "***"
 # hylafax-server (/usr/sbin/faxsetup) needs /usr/sbin/sendmail but
 # does not depend on mail-transfer-agent
-${APTITUDE_INSTALL} postfix
+if ( ! which postfix 1>>/dev/null 2>>/dev/null ); then
+	${APTITUDE_INSTALL} postfix
+fi
 ${APTITUDE_INSTALL} hylafax-server
 
 if [ ! -e /etc/hylafax/getty-link ]; then
