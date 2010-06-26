@@ -159,7 +159,7 @@ APTITUDE_INSTALL="${APTITUDE_INSTALL} install"
 # very cheap hack to wait for the DHCP-client
 #
 COUNTER=0
-while [  $COUNTER -lt 10 ]; do
+while [  $COUNTER -lt 5 ]; do
     echo -n "."
     sleep 1
     let COUNTER=COUNTER+1 
@@ -298,7 +298,8 @@ HEREDOC
 #fi
 
 WGET="wget"
-WGET_ARGS="-c -T 60 --no-check-certificate"
+#WGET_ARGS="-c -T 60 --no-check-certificate"
+WGET_ARGS="-T 60 --no-check-certificate"
 DOWNLOAD="${WGET} ${WGET_ARGS}"
 
 
@@ -308,7 +309,13 @@ echo ""
 echo "***"
 echo "***  Setting up language environment ..."
 echo "***"
-${APTITUDE_INSTALL} locales
+if ( ! which locale-gen 1>>/dev/null 2>>/dev/null ); then
+	${APTITUDE_INSTALL} locales
+elif [ ! -e /usr/share/i18n/locales/. ]; then
+	${APTITUDE_INSTALL} locales
+elif [ ! -e /usr/share/locale/. ]; then
+	${APTITUDE_INSTALL} locales
+fi
 if [ -e /etc/locale.gen ]; then
 	grep -e "^de_DE\.UTF-8 UTF-8" /etc/locale.gen || echo "de_DE.UTF-8 UTF-8" >> /etc/locale.gen
 	grep -e "^en_US\.UTF-8 UTF-8" /etc/locale.gen || echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
@@ -403,7 +410,19 @@ echo ""
 echo "***"
 echo "***  Installing Dahdi ..."
 echo "***"
-${APTITUDE_INSTALL} dahdi dahdi-modules
+if ( aptitude search dahdi | grep '^i' | grep -e '\sdahdi\s' 1>>/dev/null 2>>/dev/null ) \
+&& ( aptitude search dahdi-modules-`uname -r` | grep '^i' | grep -e '\sdahdi-modules-' 1>>/dev/null 2>>/dev/null )
+then
+	echo "*** Dahdi base already installed."
+	HAVE_DAHDI_USER=YES
+else
+	echo "*** Dahdi base yet to install ..."
+	HAVE_DAHDI_USER=NO
+fi
+if [ "$HAVE_DAHDI_USER" != "YES" ]; then
+	${APTITUDE_INSTALL} dahdi dahdi-modules
+fi
+
 if [ ! -e /lib/modules/`uname -r`/dahdi/dahdi.ko ]; then
 	${APTITUDE_INSTALL} dahdi-source
 	echo ""
@@ -545,6 +564,7 @@ ln -snf gemeinschaft-source-${GEMEINSCHAFT_VERS} gemeinschaft-source
 # main Gemeinschaft dir link
 #
 cd /opt/
+rm -rf gemeinschaft 2>>/dev/null || true
 ln -snf gemeinschaft-source/opt/gemeinschaft gemeinschaft
 
 # fix MOH location for Debian:
