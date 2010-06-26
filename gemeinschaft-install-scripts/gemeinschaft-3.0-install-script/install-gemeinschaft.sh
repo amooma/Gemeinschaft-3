@@ -1082,7 +1082,6 @@ echo ""
 # let's do some ASCII art
 #
 (
-clear
 echo "**************************************************************************"
 echo "***                 G E M E I N S C H A F T   ${GEMEINSCHAFT_VERS}"
 echo "***"
@@ -1102,7 +1101,10 @@ echo "***"
 echo "***   Find mailinglists and more info at"
 echo "***     http://www.amooma.de/gemeinschaft/"
 echo "**************************************************************************"
-)
+) > /tmp/gemeinschaft-beispiel-user.txt
+
+clear
+cat /tmp/gemeinschaft-beispiel-user.txt
 
 
 # make bash re-read .bashrc:
