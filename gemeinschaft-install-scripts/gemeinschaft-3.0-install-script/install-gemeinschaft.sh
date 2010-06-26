@@ -320,6 +320,58 @@ else
 fi
 
 
+# Input box for the license key.
+# At this point this is not meant as a security measure but mainly
+# to avoid invalid keys early in the installation process.
+
+LICENSE_KEY=""
+INPUT_OK="NO"
+while ! [ "$INPUT_OK" = "OK" ]; do
+	dialog --nocancel \
+	  --title "Lizenz-Schluessel / License Key" \
+	  --form \
+	  "\nBitte geben Sie den Lizenz-Schluessel fuer Gemeinschaft ein:\nPlease enter the license key for Gemeinschaft:" 11 68 2 \
+	  "Lizenz-Schluessel:" 1 2 "${LICENSE_KEY}" 1 24 35 32 \
+	  2> ~/dialog-tmp.$$
+	
+	if [ ${?} -ne 0 ]; then sleep 1; continue; fi
+	
+	clear
+	
+	LICENSE_KEY=$( cat ~/dialog-tmp.$$| tail -n +1 | head -n 1 )
+	rm ~/dialog-tmp.$$
+	
+	LICENSE_KEY=`echo $LICENSE_KEY | sed -e 's/ /-/g' | grep -aoE '[0-9a-zA-Z\-]{1,50}'`
+		
+	if [ -z $LICENSE_KEY ]; then sleep 1; continue; fi
+	
+	dialog --infobox "Lizenz-Schlüssel wird überprüft ..." 6 60
+	sleep 1
+	check_result=`wget -q -O - -T 40 "http://www.kempgen.net/tmp/gemeinschaft-amooma/xen/license-check?key=${LICENSE_KEY}&mac=${MY_MAC_ADDR}"`
+	if ! echo $check_result | grep -i CHECK 1>>/dev/null 2>>/dev/null
+	then
+		sleep 1
+		dialog --msgbox "Der Lizenz-Schlüssel konnte nicht überprüft werden." 8 60
+		continue
+	fi
+	
+	if echo $check_result | grep -i CHECK | grep -i OK 1>>/dev/null 2>>/dev/null
+	then
+		INPUT_OK="OK"
+	fi
+	
+	if ! [ "$INPUT_OK" = "OK" ]; then
+		sleep 1
+		dialog --msgbox "Der eingegebene Lizenz-Schlüssel ist ungültig." 8 60
+	fi
+done
+clear
+LICENSE_KEY=`echo $LICENSE_KEY | tr a-z A-Z`
+#echo "LICENSE_KEY = \"${LICENSE_KEY}\""
+echo "${LICENSE_KEY}" > /etc/.gemeinschaft-license.key
+
+
+
 # install ntp
 #
 echo ""
