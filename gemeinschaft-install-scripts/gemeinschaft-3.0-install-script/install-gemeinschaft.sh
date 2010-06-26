@@ -248,7 +248,7 @@ sleep 1
 # wait for internet access
 #
 echo "Checking Internet access ..."
-while ! ( wget -O - -T 30 http://www.amooma.de/ >>/dev/null ); do sleep 5; done
+while ! ( wget -O - -T 30 --spider http://www.amooma.de/ >>/dev/null ); do sleep 5; done
 MY_MAC_ADDR=`LANG=C ifconfig | grep -oE '[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}' | head -n 1`
 wget -O - -T 30 --spider http://www.amooma.de/gemeinschaft/installer/checkin?mac=$MY_MAC_ADDR >>/dev/null 2>>/dev/null || true
 
