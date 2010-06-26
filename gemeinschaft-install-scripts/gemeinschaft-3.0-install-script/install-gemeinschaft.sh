@@ -298,8 +298,7 @@ HEREDOC
 #fi
 
 WGET="wget"
-#WGET_ARGS="-c -T 60 --no-check-certificate"
-WGET_ARGS="-T 60 --no-check-certificate"
+WGET_ARGS="-c -T 60 --no-check-certificate"
 DOWNLOAD="${WGET} ${WGET_ARGS}"
 
 
@@ -530,9 +529,9 @@ cd /usr/share/asterisk/moh/
 for fmt in alaw; do
 	#F=asterisk-moh-freeplay-${fmt}
 	F=asterisk-moh-opsound-${fmt}-current
-	wget http://downloads.asterisk.org/pub/telephony/sounds/${F}.tar.gz
+	${DOWNLOAD} http://downloads.asterisk.org/pub/telephony/sounds/${F}.tar.gz
 	tar -xzf ${F}.tar.gz
-	rm ${F}.tar.gz
+	rm ${F}.tar.gz || true
 done
 
 
