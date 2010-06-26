@@ -847,6 +847,7 @@ cd /etc/cron.d/
 ln -snf /opt/gemeinschaft-source/etc/cron.d/gs-cc-guardian || true
 ln -snf /opt/gemeinschaft-source/etc/cron.d/gs-queuelog-to-db || true
 ln -snf /opt/gemeinschaft-source/etc/cron.d/gs-queues-refresh || true
+cd
 
 
 # remove build environment 
@@ -1112,6 +1113,8 @@ cat /tmp/gemeinschaft-beispiel-user.txt
 if [ "x${SHELL}" = "x/bin/bash" ]; then
 	exec ${SHELL}
 fi
+
+cd
 exit 0
 
 
