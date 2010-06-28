@@ -655,8 +655,7 @@ echo ""
 #echo "***"
 #echo "***  Installing PHP-APC ..."
 #echo "***"
-#${APTITUDE_INSTALL} php-apc
-#//FIXME - not (yet?) available
+${APTITUDE_INSTALL} php-apc || true
 
 /etc/init.d/apache2 stop
 invoke-rc.d apache2 restart
