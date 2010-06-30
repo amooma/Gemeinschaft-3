@@ -442,14 +442,14 @@ fi
 dahdi_genconf || true
 
 
-# install libpri, asterisk, asterisk-chan-capi
+# install libpri, asterisk
 #
 echo ""
 echo "***"
 echo "***  Installing Asterisk ..."
 echo "***"
 ${APTITUDE_INSTALL} libpri1.4 asterisk \
-	asterisk-chan-capi asterisk-mysql \
+	asterisk-mysql \
 	vpb-driver-source-
 # asterisk depends on libvpb0 which recommends vpb-driver-source.
 # Don't install that because that in turn pulls a complete build
