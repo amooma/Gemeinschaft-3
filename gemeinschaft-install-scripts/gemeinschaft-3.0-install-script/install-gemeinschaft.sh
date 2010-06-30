@@ -262,10 +262,11 @@ echo "***"
 ${APTITUDE_INSTALL} \
 	coreutils lsb-base grep findutils sudo wget curl cron \
 	expect dialog logrotate hostname net-tools ifupdown iputils-ping netcat \
-	openssh-client openssh-server \
 	udev psmisc dnsutils iputils-arping pciutils bzip2 \
 	console-data console-tools \
 	vim less
+#${APTITUDE_INSTALL} ssh
+# No ssh by default.
 #aptitude clean
 
 # now that we have vim, enable syntax highlighting by default:
@@ -1131,9 +1132,21 @@ TMPDIR.tmpdir="N"
 HEREDOC
 bastille -b 2>>/dev/null || true
 
+
 # snort
 #
 ${APTITUDE_INSTALL} snort
+
+
+# samhain
+#
+#${APTITUDE_INSTALL} samhain
+
+
+# psad
+#
+#${APTITUDE_INSTALL} psad
+
 
 
 
