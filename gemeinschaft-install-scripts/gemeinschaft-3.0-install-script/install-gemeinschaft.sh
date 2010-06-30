@@ -1072,7 +1072,7 @@ a2enmod mod-evasive
 # Bastille
 #
 aptitude install bastille
-cat <<\HEREDOC > /etc/Bastille/config2
+cat <<\HEREDOC > /etc/Bastille/config
 # Q:  Would you like to enforce password aging? [Y]
 AccountSecurity.passwdage="Y"
 # Q:  Should Bastille disable clear-text r-protocols that use IP-based authentication? [Y]
