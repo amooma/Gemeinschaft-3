@@ -1134,18 +1134,28 @@ bastille -b 2>>/dev/null || true
 
 
 # snort
-#
 ${APTITUDE_INSTALL} snort
 
 
 # samhain
-#
 #${APTITUDE_INSTALL} samhain
 
 
 # psad
-#
 #${APTITUDE_INSTALL} psad
+
+
+# harden-servers (remove services that are known to be insecure)
+# Will alert the admin if they try to install e.g. telnetd or nfs-kernel-server.
+#
+# harden-...
+#
+${APTITUDE_INSTALL} harden-servers harden-clients harden-nids
+
+
+# integrit
+#
+#${APTITUDE_INSTALL} integrit
 
 
 
