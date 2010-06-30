@@ -1034,6 +1034,106 @@ if [ -z $ADMIN_SIPPW ]; then USER_SIPPW='x'; fi
 
 
 
+# hardening
+#
+# Dieses Skript ist dazu bestimmt Gemeinschaft zu installieren.
+# Das System muß vom Administrator der lokalen Infrastruktur
+# entsprechend ggf. zusätzlich abgesichert werden.
+# Ebenso muß der Administrator wie auf jedem System üblich die
+# Mail-Zustellung korrekt konfigurieren.
+# Das System ist nicht dazu bestimmt ohne weitere Absicherung im
+# öffentlichen Internet betrieben zu werden.
+# Trotzdem wollen wir hier ein Grund-Maß an Sicherheit bieten
+# soweit die möglich ist.
+#
+# mod_evasive gegen DoS- und Brute-Force-Attacken:
+#
+aptitude install libapache2-mod-evasive
+cat <<\HEREDOC > /etc/apache2/mods-available/mod-evasive.conf
+<IfModule mod_evasive20.c>
+  DOSHashTableSize   1024
+  DOSPageCount       20
+  DOSPageInterval    5
+  DOSSiteCount       150
+  DOSSiteInterval    5
+  DOSBlockingPeriod  10
+  DOSWhitelist       127.0.0.*
+  #DOSEmailNotify     user@example.com
+</IfModule>
+
+HEREDOC
+a2enmod mod-evasive
+/etc/init.d/apache2 restart
+
+# Advanced Policy Firewall based on iptables (netfilter):
+#
+#aptitude install apf-firewall
+
+# Bastille
+#
+aptitude install bastille
+cat <<\HEREDOC > /etc/Bastille/config2
+# Q:  Would you like to enforce password aging? [Y]
+AccountSecurity.passwdage="Y"
+# Q:  Should Bastille disable clear-text r-protocols that use IP-based authentication? [Y]
+AccountSecurity.protectrhost="Y"
+# Q:  Should we disallow root login on tty's 1-6? [N]
+AccountSecurity.rootttylogins="N"
+# Q:  Do you want to set the default umask? [Y]
+AccountSecurity.umaskyn="N"
+# Q:  Would you like to deactivate the Apache web server? [Y]
+Apache.apacheoff="N"
+# Q:  Would you like to bind the Web server to listen only to the localhost? [N]
+Apache.bindapachelocal="N"
+# Q:  Would you like to bind the web server to a particular interface? [N]
+Apache.bindapachenic="N"
+# Q:  Would you like to disable CTRL-ALT-DELETE rebooting? [N]
+BootSecurity.secureinittab="N"
+# Q:  Should we restrict console access to a small group of user accounts? [N]
+ConfigureMiscPAM.consolelogin="N"
+# Q:  Would you like to put limits on system resource usage? [N]
+ConfigureMiscPAM.limitsconf="Y"
+# Q:  Would you like to set more restrictive permissions on the administration utilities? [N]
+FilePermissions.generalperms_1_1="N"
+# Q:  Would you like to disable SUID status for mount/umount?
+FilePermissions.suidmount="Y"
+# Q:  Would you like to disable SUID status for ping? [Y]
+FilePermissions.suidping="N"
+# Q:  Would you like to run the packet filtering script? [N]
+Firewall.ip_intro="N"
+# Q:  Would you like to add additional logging? [Y]
+Logging.morelogging="Y"
+# Q:  Would you like to set up process accounting? [N]
+Logging.pacct="N"
+# Q:  Do you have a remote logging host? [N]
+Logging.remotelog="N"
+# Q:  Would you like to disable acpid and/or apmd? [Y]
+MiscellaneousDaemons.apmd="N"
+# Q:  Would you like to deactivate NFS and Samba? [Y]
+MiscellaneousDaemons.remotefs="Y"
+# Q:  Would you like to disable printing? [N]
+Printing.printing="Y"
+# Q:  Would you like to disable printing? [N]
+Printing.printing_cups="Y"
+# Q:  Would you like to display "Authorized Use" messages at log-in time? [Y]
+SecureInetd.banners="N"
+# Q:  Should Bastille ensure inetd's FTP service does not run on this system? [y]
+SecureInetd.deactivate_ftp="Y"
+# Q:  Should Bastille ensure the telnet service does not run on this system? [y]
+SecureInetd.deactivate_telnet="Y"
+# Q:  Would you like to set a default-deny on TCP Wrappers and xinetd? [N]
+SecureInetd.tcpd_default_deny="Y"
+# Q:  Do you want to stop sendmail from running in daemon mode? [Y]
+Sendmail.sendmaildaemon="Y"
+# Q:  Would you like to install TMPDIR/TMP scripts? [N]
+TMPDIR.tmpdir="N"
+
+HEREDOC
+bastille -b 2>>/dev/null || true
+
+
+
+
 echo ""
 echo "***"
 echo "***  Restarting services ..."
