@@ -501,6 +501,8 @@ ${APTITUDE_INSTALL} \
 	apache2 \
 	php5-cli libapache2-mod-php5 php5-mysql php5-ldap \
 	sox mpg123
+unset DEBIAN_FRONTEND
+unset DEBIAN_PRIORITY
 #aptitude clean
 
 
