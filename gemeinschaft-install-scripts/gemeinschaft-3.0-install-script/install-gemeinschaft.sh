@@ -1048,7 +1048,7 @@ if [ -z $ADMIN_SIPPW ]; then USER_SIPPW='x'; fi
 #
 # mod_evasive gegen DoS- und Brute-Force-Attacken:
 #
-aptitude install libapache2-mod-evasive
+${APTITUDE_INSTALL} libapache2-mod-evasive
 cat <<\HEREDOC > /etc/apache2/mods-available/mod-evasive.conf
 <IfModule mod_evasive20.c>
   DOSHashTableSize   1024
@@ -1067,11 +1067,11 @@ a2enmod mod-evasive
 
 # Advanced Policy Firewall based on iptables (netfilter):
 #
-#aptitude install apf-firewall
+#${APTITUDE_INSTALL} apf-firewall
 
 # Bastille
 #
-aptitude install bastille
+${APTITUDE_INSTALL} bastille
 cat <<\HEREDOC > /etc/Bastille/config
 # Q:  Would you like to enforce password aging? [Y]
 AccountSecurity.passwdage="Y"
@@ -1131,6 +1131,9 @@ TMPDIR.tmpdir="N"
 HEREDOC
 bastille -b 2>>/dev/null || true
 
+# snort
+#
+${APTITUDE_INSTALL} snort
 
 
 
