@@ -1138,14 +1138,11 @@ bastille -b 2>>/dev/null || true
 # snort
 ${APTITUDE_INSTALL} snort
 
-
 # samhain
 #${APTITUDE_INSTALL} samhain
 
-
 # psad
 #${APTITUDE_INSTALL} psad
-
 
 # harden-servers (remove services that are known to be insecure)
 # Will alert the admin if they try to install e.g. telnetd or nfs-kernel-server.
@@ -1154,11 +1151,21 @@ ${APTITUDE_INSTALL} snort
 #
 ${APTITUDE_INSTALL} harden-servers harden-clients
 
+# portsentry (detect port scans)
+${APTITUDE_INSTALL} portsentry
 
 # integrit
 #
 #${APTITUDE_INSTALL} integrit
-
+#cp /usr/share/doc/integrit/etc/bin.conf /etc/integrit/
+#cp /usr/share/doc/integrit/etc/sbin.conf /etc/integrit/
+#sed -i 's/^ *CONFIGS/#CONFIGS/g' /etc/integrit/integrit.debian.conf
+#(
+#echo ''
+#echo 'CONFIGS="/etc/integrit/bin.conf /etc/integrit/sbin.conf"'
+#echo ''
+#) >> /etc/integrit/integrit.debian.conf
+#/etc/cron.daily/integrit
 
 
 
