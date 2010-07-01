@@ -1152,7 +1152,7 @@ ${APTITUDE_INSTALL} snort
 #
 # harden-...
 #
-${APTITUDE_INSTALL} harden-servers harden-clients harden-nids
+${APTITUDE_INSTALL} harden-servers harden-clients
 
 
 # integrit
