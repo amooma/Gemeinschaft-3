@@ -497,7 +497,7 @@ echo "***  Installing Gemeinschaft ..."
 echo "***"
 cd /opt/
 
-## Get normal tarball {
+# Get normal tarball {
 #
 #${DOWNLOAD} "${GEMEINSCHAFT_TGZ_URL_DIR}/gemeinschaft-${GEMEINSCHAFT_VERS}.tgz"
 ## check if the tarball conforms to the expected format:
