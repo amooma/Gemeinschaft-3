@@ -15,17 +15,30 @@ GEMEINSCHAFT_VERS="3.0.0"
 GEMEINSCHAFT_TGZ_URL_DIR="https://github.com/amooma/GemeinschaftPBX/tarball"
 # URL: ${GEMEINSCHAFT_TGZ_URL_DIR}/${GEMEINSCHAFT_VERS}
 
+#GEMEINSCHAFT_SIEMENS_VERS="trunk-r00358"
+#GEMEINSCHAFT_SIEMENS_TGZ_URL_DIR="http://www.amooma.de/gemeinschaft/download"
+## URL: ${GEMEINSCHAFT_SIEMENS_TGZ_URL_DIR}/gemeinschaft-siemens-${GEMEINSCHAFT_SIEMENS_VERS}.tgz
+#
+#GEMEINSCHAFT_SOUNDS_DE_WAV_VERS="current"
+#GEMEINSCHAFT_SOUNDS_DE_WAV_TGZ_URL_DIR="http://www.amooma.de/gemeinschaft/download"
+## URL: ${GEMEINSCHAFT_SOUNDS_DE_WAV_TGZ_URL_DIR}/gemeinschaft-sounds-de-wav-${GEMEINSCHAFT_SOUNDS_DE_WAV_VERS}.tar.gz
+#
+##ASTERISK_SOUNDS_DE_ALAW_VERS="current"
+#ASTERISK_SOUNDS_DE_ALAW_TGZ_URL_DIR="http://www.amooma.de/asterisk/sprachbausteine"
+## URL: ${ASTERISK_SOUNDS_DE_ALAW_TGZ_URL_DIR}/asterisk-core-sounds-de-alaw.tar.gz
+
 GEMEINSCHAFT_SIEMENS_VERS="trunk-r00358"
-GEMEINSCHAFT_SIEMENS_TGZ_URL_DIR="http://www.amooma.de/gemeinschaft/download"
-# URL: ${GEMEINSCHAFT_SIEMENS_TGZ_URL_DIR}/gemeinschaft-siemens-${GEMEINSCHAFT_SIEMENS_VERS}.tgz
+GEMEINSCHAFT_SIEMENS_TGZ_IN_TGZ_DIR="misc/provisioning/siemens"
+# File: ${GEMEINSCHAFT_SIEMENS_TGZ_IN_TGZ_DIR}/gemeinschaft-siemens-${GEMEINSCHAFT_SIEMENS_VERS}.tgz
 
 GEMEINSCHAFT_SOUNDS_DE_WAV_VERS="current"
-GEMEINSCHAFT_SOUNDS_DE_WAV_TGZ_URL_DIR="http://www.amooma.de/gemeinschaft/download"
-# URL: ${GEMEINSCHAFT_SOUNDS_DE_WAV_TGZ_URL_DIR}/gemeinschaft-sounds-de-wav-${GEMEINSCHAFT_SOUNDS_DE_WAV_VERS}.tar.gz
+GEMEINSCHAFT_SOUNDS_DE_WAV_TGZ_IN_TGZ_DIR="misc/voiceprompts"
+# File: ${GEMEINSCHAFT_SOUNDS_DE_WAV_TGZ_IN_TGZ_DIR}/gemeinschaft-sounds-de-wav-${GEMEINSCHAFT_SOUNDS_DE_WAV_VERS}.tar.gz
 
 #ASTERISK_SOUNDS_DE_ALAW_VERS="current"
-ASTERISK_SOUNDS_DE_ALAW_TGZ_URL_DIR="http://www.amooma.de/asterisk/sprachbausteine"
-# URL: ${ASTERISK_SOUNDS_DE_ALAW_TGZ_URL_DIR}/asterisk-core-sounds-de-alaw.tar.gz
+ASTERISK_SOUNDS_DE_ALAW_TGZ_IN_TGZ_DIR="misc/voiceprompts"
+# File: ${ASTERISK_SOUNDS_DE_ALAW_TGZ_IN_TGZ_DIR}/asterisk-core-sounds-de-alaw.tar.gz
+
 
 
 # language
@@ -466,7 +479,15 @@ echo "***"
 
 cd /usr/share/asterisk/sounds/
 [ -e de ] && rm -rf de || true
-${DOWNLOAD} "${ASTERISK_SOUNDS_DE_ALAW_TGZ_URL_DIR}/asterisk-core-sounds-de-alaw.tar.gz"
+
+# Get normal tarball {
+#${DOWNLOAD} "${ASTERISK_SOUNDS_DE_ALAW_TGZ_URL_DIR}/asterisk-core-sounds-de-alaw.tar.gz"
+# Get normal tarball }
+
+# Get tarball from within Gemeinschaft {
+cp "/opt/gemeinschaft-source/{ASTERISK_SOUNDS_DE_ALAW_TGZ_IN_TGZ_DIR}/asterisk-core-sounds-de-alaw.tar.gz" ./
+# Get tarball from within Gemeinschaft }
+
 tar -xzf asterisk-core-sounds-de-alaw.tar.gz
 rm -f asterisk-core-sounds-de-alaw.tar.gz
 
@@ -545,9 +566,10 @@ ln -snf gemeinschaft-source/opt/gemeinschaft gemeinschaft
 #
 sed -i -r -e 's#^( *;? *directory *= *)/var/lib/asterisk(/moh)#\1/usr/share/asterisk\2#g' /opt/gemeinschaft/etc/asterisk/musiconhold.conf
 
+
 # voice prompts for Gemeinschaft
 #
-echo "Downloading Voiceprompts for Gemeinschaft ..."
+echo "Installing Voiceprompts for Gemeinschaft ..."
 [ -e /opt/gemeinschaft/sounds ]
 cd /opt/gemeinschaft/sounds
 if [ -e de-DE ]; then
@@ -556,7 +578,15 @@ fi
 if [ -e de-DE-tts ]; then
 	rm -rf de-DE-tts || true
 fi
-${DOWNLOAD} "${GEMEINSCHAFT_SOUNDS_DE_WAV_TGZ_URL_DIR}/gemeinschaft-sounds-de-wav-${GEMEINSCHAFT_SOUNDS_DE_WAV_VERS}.tar.gz"
+
+# Get normal tarball {
+#${DOWNLOAD} "${GEMEINSCHAFT_SOUNDS_DE_WAV_TGZ_URL_DIR}/gemeinschaft-sounds-de-wav-${GEMEINSCHAFT_SOUNDS_DE_WAV_VERS}.tar.gz"
+# Get normal tarball }
+
+# Get tarball from within Gemeinschaft {
+cp "/opt/gemeinschaft-source/{GEMEINSCHAFT_SOUNDS_DE_WAV_TGZ_IN_TGZ_DIR}/gemeinschaft-sounds-de-wav-${GEMEINSCHAFT_SOUNDS_DE_WAV_VERS}.tar.gz" ./
+# Get tarball from within Gemeinschaft }
+
 tar -xzf gemeinschaft-sounds-de-wav-${GEMEINSCHAFT_SOUNDS_DE_WAV_VERS}.tar.gz
 rm -f gemeinschaft-sounds-de-wav-${GEMEINSCHAFT_SOUNDS_DE_WAV_VERS}.tar.gz || true
 if [ -e de-DE ]; then
@@ -571,6 +601,7 @@ cd de-DE-tts
 # see man sox. -b 16 ? -b 8 ?
 #rm *.wav || true
 cd
+
 
 
 # MySQL: add gemeinschaft user
@@ -742,9 +773,17 @@ mysql --batch --user=gemeinschaft --password="${GEMEINSCHAFT_DB_PASS}" -e "USE \
 
 # install gemeinschaft-siemens addon
 #
-echo "Downloading Siemens addon for Gemeinschaft (Openstage provisoning) ..."
+echo "Installing Siemens addon for Gemeinschaft (Openstage provisoning) ..."
 cd /opt/
-${DOWNLOAD} "${GEMEINSCHAFT_SIEMENS_TGZ_URL_DIR}/gemeinschaft-siemens-${GEMEINSCHAFT_SIEMENS_VERS}.tgz"
+
+# Get normal tarball {
+#${DOWNLOAD} "${GEMEINSCHAFT_SIEMENS_TGZ_URL_DIR}/gemeinschaft-siemens-${GEMEINSCHAFT_SIEMENS_VERS}.tgz"
+# Get normal tarball }
+
+# Get tarball from within Gemeinschaft {
+cp "/opt/gemeinschaft-source/{GEMEINSCHAFT_SIEMENS_TGZ_IN_TGZ_DIR}/gemeinschaft-siemens-${GEMEINSCHAFT_SIEMENS_VERS}.tgz" ./
+# Get tarball from within Gemeinschaft }
+
 tar -xzf gemeinschaft-siemens-${GEMEINSCHAFT_SIEMENS_VERS}.tgz
 rm -f gemeinschaft-siemens-${GEMEINSCHAFT_SIEMENS_VERS}.tgz
 mv gemeinschaft-siemens-${GEMEINSCHAFT_SIEMENS_VERS} gemeinschaft-siemens-source-${GEMEINSCHAFT_SIEMENS_VERS}
