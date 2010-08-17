@@ -9,8 +9,11 @@
 #GEMEINSCHAFT_VERS="master-20100414-c9e268b"
 GEMEINSCHAFT_VERS="3.0.0"
 
-GEMEINSCHAFT_TGZ_URL_DIR="http://www.amooma.de/gemeinschaft/download"
-# URL: ${GEMEINSCHAFT_TGZ_URL_DIR}/gemeinschaft-${GEMEINSCHAFT_VERS}.tgz
+#GEMEINSCHAFT_TGZ_URL_DIR="http://www.amooma.de/gemeinschaft/download"
+## URL: ${GEMEINSCHAFT_TGZ_URL_DIR}/gemeinschaft-${GEMEINSCHAFT_VERS}.tgz
+
+GEMEINSCHAFT_TGZ_URL_DIR="https://github.com/amooma/GemeinschaftPBX/tarball"
+# URL: ${GEMEINSCHAFT_TGZ_URL_DIR}/${GEMEINSCHAFT_VERS}
 
 GEMEINSCHAFT_SIEMENS_VERS="trunk-r00358"
 GEMEINSCHAFT_SIEMENS_TGZ_URL_DIR="http://www.amooma.de/gemeinschaft/download"
@@ -493,23 +496,44 @@ echo "***"
 echo "***  Installing Gemeinschaft ..."
 echo "***"
 cd /opt/
-${DOWNLOAD} "${GEMEINSCHAFT_TGZ_URL_DIR}/gemeinschaft-${GEMEINSCHAFT_VERS}.tgz"
-# check if the tarball conforms to the expected format:
 
-NUM_DIRS_IN_TARBALL=`tar --list -f gemeinschaft-${GEMEINSCHAFT_VERS}.tgz | cut -d '/' -f 1 | uniq | wc -l`
-if [ "x${NUM_DIRS_IN_TARBALL}" != "x1" ]; then
-	err "  Gemeinschaft tarball contains more than one directory!"
-fi
-echo "Gemeinschaft tarball contains exactly one top-level entry. Good."
-TARBALL_TOP_LEVEL_DIR=`tar --list -f gemeinschaft-${GEMEINSCHAFT_VERS}.tgz | head -n 1 | cut -d '/' -f 1`
-if [ "${TARBALL_TOP_LEVEL_DIR}x" != "gemeinschaft-${GEMEINSCHAFT_VERS}x" ]; then
-	err "  Top-level directory in Gemeinschaft tarball has to be \"gemeinschaft-${GEMEINSCHAFT_VERS}\" but is \"${TARBALL_TOP_LEVEL_DIR}\"!"
-fi
-echo "Gemeinschaft tarball contains ${TARBALL_TOP_LEVEL_DIR}. Good."
-tar -xvzf gemeinschaft-${GEMEINSCHAFT_VERS}.tgz
-rm -f gemeinschaft-${GEMEINSCHAFT_VERS}.tgz
-mv gemeinschaft-${GEMEINSCHAFT_VERS} gemeinschaft-source-${GEMEINSCHAFT_VERS}
+## Get normal tarball {
+#
+#${DOWNLOAD} "${GEMEINSCHAFT_TGZ_URL_DIR}/gemeinschaft-${GEMEINSCHAFT_VERS}.tgz"
+## check if the tarball conforms to the expected format:
+#
+#NUM_DIRS_IN_TARBALL=`tar --list -f gemeinschaft-${GEMEINSCHAFT_VERS}.tgz | cut -d '/' -f 1 | uniq | wc -l`
+#if [ "x${NUM_DIRS_IN_TARBALL}" != "x1" ]; then
+#	err "  Gemeinschaft tarball contains more than one directory!"
+#fi
+#echo "Gemeinschaft tarball contains exactly one top-level entry. Good."
+#TARBALL_TOP_LEVEL_DIR=`tar --list -f gemeinschaft-${GEMEINSCHAFT_VERS}.tgz | head -n 1 | cut -d '/' -f 1`
+#if [ "${TARBALL_TOP_LEVEL_DIR}x" != "gemeinschaft-${GEMEINSCHAFT_VERS}x" ]; then
+#	err "  Top-level directory in Gemeinschaft tarball has to be \"gemeinschaft-${GEMEINSCHAFT_VERS}\" but is \"${TARBALL_TOP_LEVEL_DIR}\"!"
+#fi
+#echo "Gemeinschaft tarball contains ${TARBALL_TOP_LEVEL_DIR}. Good."
+#tar -xvzf gemeinschaft-${GEMEINSCHAFT_VERS}.tgz
+#rm -f gemeinschaft-${GEMEINSCHAFT_VERS}.tgz
+#mv gemeinschaft-${GEMEINSCHAFT_VERS} gemeinschaft-source-${GEMEINSCHAFT_VERS}
+#ln -snf gemeinschaft-source-${GEMEINSCHAFT_VERS} gemeinschaft-source
+#
+# Get normal tarball }
+
+# Get tarball from GitHub {
+#
+${DOWNLOAD} "${GEMEINSCHAFT_TGZ_URL_DIR}/${GEMEINSCHAFT_VERS}"
+tar -xvzf "amooma-GemeinschaftPBX-${GEMEINSCHAFT_VERS}-*.tar.gz"
+rm -f "amooma-GemeinschaftPBX-${GEMEINSCHAFT_VERS}-*.tar.gz"
+mv "amooma-GemeinschaftPBX-701f605d285b3484c7da44c232f595e5dfc0d4d8" \
+   "gemeinschaft-${GEMEINSCHAFT_VERS}"
+echo -n ${GEMEINSCHAFT_VERS} > gemeinschaft-${GEMEINSCHAFT_VERS}/etc/gemeinschaft/.gemeinschaft-version
+mv "gemeinschaft-${GEMEINSCHAFT_VERS}" \
+   "gemeinschaft-source-${GEMEINSCHAFT_VERS}"
 ln -snf gemeinschaft-source-${GEMEINSCHAFT_VERS} gemeinschaft-source
+#
+# Get tarball from GitHub }
+
+
 
 # main Gemeinschaft dir link
 #
