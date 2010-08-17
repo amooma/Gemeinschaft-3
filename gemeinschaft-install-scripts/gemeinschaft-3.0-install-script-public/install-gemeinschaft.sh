@@ -1,14 +1,15 @@
 #!/bin/bash
 
 # (c) 2009-2010 AMOOMA GmbH - http://www.amooma.de
-# Alle Rechte vorbehalten. -- All rights reserved.
+# Lizenz: CC-by-nc-nd 3.0
+# http://creativecommons.org/licenses/by-nc-nd/3.0/de/
 
 
 #GEMEINSCHAFT_VERS="2.4.0"
 #GEMEINSCHAFT_VERS="master-20100414-c9e268b"
 GEMEINSCHAFT_VERS="3.0.0"
-#GEMEINSCHAFT_TGZ_URL_DIR="http://www.amooma.de/gemeinschaft/download"
-GEMEINSCHAFT_TGZ_URL_DIR="http://www.kempgen.net/tmp/gemeinschaft-amooma"
+
+GEMEINSCHAFT_TGZ_URL_DIR="http://www.amooma.de/gemeinschaft/download"
 # URL: ${GEMEINSCHAFT_TGZ_URL_DIR}/gemeinschaft-${GEMEINSCHAFT_VERS}.tgz
 
 GEMEINSCHAFT_SIEMENS_VERS="trunk-r00358"
@@ -248,9 +249,8 @@ sleep 1
 # wait for internet access
 #
 echo "Checking Internet access ..."
-while ! ( wget -O - -T 30 --spider http://www.amooma.de/ >>/dev/null ); do sleep 5; done
+while ! ( wget -O - -T 30 --spider http://ftp.debian.org/ >>/dev/null ); do sleep 5; done
 MY_MAC_ADDR=`LANG=C ifconfig | grep -oE '[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}\:[0-9a-fA-F]{1,2}' | head -n 1`
-wget -O - -T 30 --spider http://www.amooma.de/gemeinschaft/installer/checkin?mac=$MY_MAC_ADDR >>/dev/null 2>>/dev/null || true
 
 
 # install basic stuff
@@ -325,58 +325,6 @@ if ( type locale-gen 2>>/dev/null ); then
 else
 	echo "WARNING: locale-gen not found!" >&2
 fi
-
-
-# Input box for the license key.
-# At this point this is not meant as a security measure but mainly
-# to avoid invalid keys early in the installation process.
-
-LICENSE_KEY=""
-INPUT_OK="NO"
-while ! [ "$INPUT_OK" = "OK" ]; do
-	dialog --nocancel \
-	  --title "Lizenz-Schluessel / License Key" \
-	  --form \
-	  "\nBitte geben Sie den Lizenz-Schluessel fuer Gemeinschaft ein:\nPlease enter the license key for Gemeinschaft:" 11 68 2 \
-	  "Lizenz-Schluessel:" 1 2 "${LICENSE_KEY}" 1 24 35 32 \
-	  2> ~/dialog-tmp.$$
-	
-	if [ ${?} -ne 0 ]; then sleep 1; continue; fi
-	
-	clear
-	
-	LICENSE_KEY=$( cat ~/dialog-tmp.$$| tail -n +1 | head -n 1 )
-	rm ~/dialog-tmp.$$
-	
-	LICENSE_KEY=`echo $LICENSE_KEY | sed -e 's/ /-/g' | grep -aoE '[0-9a-zA-Z\-]{1,50}'`
-		
-	if [ -z $LICENSE_KEY ]; then sleep 1; continue; fi
-	
-	dialog --infobox "Lizenz-Schlüssel wird überprüft ..." 6 60
-	sleep 1
-	check_result=`wget -q -O - -T 40 "http://www.kempgen.net/tmp/gemeinschaft-amooma/xen/license-check?key=${LICENSE_KEY}&mac=${MY_MAC_ADDR}"`
-	if ! echo $check_result | grep -i CHECK 1>>/dev/null 2>>/dev/null
-	then
-		sleep 1
-		dialog --msgbox "Der Lizenz-Schlüssel konnte nicht überprüft werden." 8 60
-		continue
-	fi
-	
-	if echo $check_result | grep -i CHECK | grep -i OK 1>>/dev/null 2>>/dev/null
-	then
-		INPUT_OK="OK"
-	fi
-	
-	if ! [ "$INPUT_OK" = "OK" ]; then
-		sleep 1
-		dialog --msgbox "Der eingegebene Lizenz-Schlüssel ist ungültig." 8 60
-	fi
-done
-clear
-LICENSE_KEY=`echo $LICENSE_KEY | tr a-z A-Z`
-#echo "LICENSE_KEY = \"${LICENSE_KEY}\""
-echo "${LICENSE_KEY}" > /etc/.gemeinschaft-license.key
-
 
 
 # install ntp
@@ -711,7 +659,6 @@ if [ -e /etc/gemeinschaft/asterisk/manager.conf.d-available/phonesuite.conf ]; t
 fi
 
 # find IP address
-# FIXME: Vielleicht geht das auch schoener.
 #
 MY_IP_ADDR=`LANG=C ifconfig | grep inet | grep -v 'inet6' | grep -v '127\.0\.0\.1' | head -n 1 | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -v '^255' | head -n 1`
 if [ "x$?" != "x0" ] || [ -z ${MY_IP_ADDR} ]; then
@@ -765,7 +712,8 @@ sed -i -e 's/^\s*[^#].*//g' /opt/gemeinschaft/etc/listen-to-ip
 mysql --batch --user=gemeinschaft --password="${GEMEINSCHAFT_DB_PASS}" -e "USE \`asterisk\`; UPDATE \`hosts\` SET \`host\`='${MY_IP_ADDR}' WHERE \`id\`=1;" || true
 mysql --batch --user=gemeinschaft --password="${GEMEINSCHAFT_DB_PASS}" -e "USE \`asterisk\`; UPDATE \`hosts\` SET \`host\`='${MY_IP_ADDR}';" || true
 
-# moved gemeinschaft-siemens installing here cause gemeinschaft have to be configured before generating the SSL cert
+
+# gemeinschaft-siemens installation here because gemeinschaft has to be configured before generating the SSL cert
 
 
 # install gemeinschaft-siemens addon
@@ -1195,10 +1143,6 @@ dmesg | grep -i dahdi || true
 #
 /opt/gemeinschaft/sbin/gs-hylafax-auth-update || true
 
-
-# check out
-#
-wget -O - -T 30 --spider "http://www.amooma.de/gemeinschaft/installer/checkout?mac=$MY_MAC_ADDR" >>/dev/null 2>>/dev/null || true
 
 
 logger "Gemeinschaft ${GEMEINSCHAFT_VERS} has just been installed."
