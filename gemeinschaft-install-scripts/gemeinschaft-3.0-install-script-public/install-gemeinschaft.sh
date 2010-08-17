@@ -996,29 +996,7 @@ if [ -z $ADMIN_SIPPW ]; then USER_SIPPW='x'; fi
 # öffentlichen Internet betrieben zu werden.
 # Trotzdem wollen wir hier ein Grund-Maß an Sicherheit bieten
 # soweit die möglich ist.
-#
-# mod_evasive gegen DoS- und Brute-Force-Attacken:
-#
-${APTITUDE_INSTALL} libapache2-mod-evasive
-cat <<\HEREDOC > /etc/apache2/mods-available/mod-evasive.conf
-<IfModule mod_evasive20.c>
-  DOSHashTableSize   1024
-  DOSPageCount       20
-  DOSPageInterval    5
-  DOSSiteCount       150
-  DOSSiteInterval    5
-  DOSBlockingPeriod  10
-  DOSWhitelist       127.0.0.*
-  #DOSEmailNotify     user@example.com
-</IfModule>
 
-HEREDOC
-a2enmod mod-evasive
-/etc/init.d/apache2 restart
-
-# Advanced Policy Firewall based on iptables (netfilter):
-#
-#${APTITUDE_INSTALL} apf-firewall
 
 # Bastille
 #
@@ -1086,11 +1064,6 @@ bastille -b 2>>/dev/null || true
 # snort
 ${APTITUDE_INSTALL} snort
 
-# samhain
-#${APTITUDE_INSTALL} samhain
-
-# psad
-#${APTITUDE_INSTALL} psad
 
 # harden-servers (remove services that are known to be insecure)
 # Will alert the admin if they try to install e.g. telnetd or nfs-kernel-server.
@@ -1101,19 +1074,6 @@ ${APTITUDE_INSTALL} harden-servers harden-clients
 
 # portsentry (detect port scans)
 ${APTITUDE_INSTALL} portsentry
-
-# integrit
-#
-#${APTITUDE_INSTALL} integrit
-#cp /usr/share/doc/integrit/etc/bin.conf /etc/integrit/
-#cp /usr/share/doc/integrit/etc/sbin.conf /etc/integrit/
-#sed -i 's/^ *CONFIGS/#CONFIGS/g' /etc/integrit/integrit.debian.conf
-#(
-#echo ''
-#echo 'CONFIGS="/etc/integrit/bin.conf /etc/integrit/sbin.conf"'
-#echo ''
-#) >> /etc/integrit/integrit.debian.conf
-#/etc/cron.daily/integrit
 
 
 
